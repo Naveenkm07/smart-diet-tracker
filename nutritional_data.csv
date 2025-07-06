@@ -1,0 +1,20 @@
+food,calories,protein,fat,carbs,fiber,vitamins,minerals,allergens
+apple,95,0.5,0.3,25,4.5,A,C,K,,
+banana,105,1.3,0.3,27,3.1,B6,C,K,,
+spinach,23,2.9,0.4,3.6,2.2,A,C,K,iron,
+salmon,208,22,13,0,0,D,B12,omega3,fish
+chicken breast,165,31,3.6,0,0,B6,B12,,
+quinoa,120,4.4,1.9,21.3,2.8,B,E,iron,magnesium,
+greek yogurt,130,17,0.7,9,0,B12,calcium,,
+almonds,164,6,14,6,3.5,E,calcium,magnesium,nuts
+sweet potato,103,2,0.2,24,3.8,A,C,,
+avocado,160,2,15,9,7,B6,E,K,,
+brown rice,216,4.5,1.8,45,3.6,B,iron,magnesium,,
+whole wheat bread,247,9,3.2,41,7,B,iron,,
+oatmeal,307,13,5,55,8,B,iron,magnesium,,
+blueberries,57,0.7,0.3,14,2.4,C,K,,
+strawberries,32,0.7,0.3,7.7,2,C,K,,
+tuna,132,28,1.2,0,0,D,B12,omega3,fish
+walnuts,185,4.3,18.5,3.9,1.9,B6,E,omega3,nuts
+broccoli,55,3.7,0.6,11.2,5.2,A,C,K,,
+carrot,41,0.9,0.2,10,2.8,A,K,, 

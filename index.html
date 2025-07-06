@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness & Wellbeing Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e0f7fa; /* Light blue background color */
+            /* background-image: url('https://images.unsplash.com/photo-1505228395891-9a51e7e81bf6?fit=crop&w=1900&q=80'); */ /* Comment out background image */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Keep background fixed when scrolling */
+            line-height: 1.6;
+            color: #343a40; /* Ensure text is readable on background */
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .section-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .section-card:nth-child(2) { animation-delay: 0.1s; }
+        .section-card:nth-child(3) { animation-delay: 0.2s; }
+        .section-card:nth-child(4) { animation-delay: 0.3s; }
+        .section-card:nth-child(5) { animation-delay: 0.4s; }
+        .section-card:nth-child(6) { animation-delay: 0.5s; }
+        .section-card:nth-child(7) { animation-delay: 0.6s; }
+        .section-card:nth-child(8) { animation-delay: 0.7s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        input, select {
+            padding: 14px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        button {
+            padding: 14px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 17px;
+            margin: 8px 0;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
+        }
+        button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+            color: #495057;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9ecef;
+            transform: scale(1.01);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+            max-width: 450px;
+            margin: 0 auto 25px auto;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+            animation-delay: 0.3s;
+        }
+        .nav-buttons button {
+            background-color: #007bff;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .nav-buttons button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        .back-button {
+            background-color: #6c757d;
+            margin-top: 25px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+        }
+        h2 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .section-header h2 {
+            margin: 0;
+        }
+        .user-info {
+            text-align: right;
+            color: #555;
+            margin-bottom: 15px;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            form, .nav-buttons {
+                max-width: 100%;
+            }
+        }
+
+        /* Add style for the NHCE text */
+        .nhce-text {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #004d40; /* Darker color for contrast */
+            z-index: 1000; /* Ensure it's above other content */
+        }
+    </style>
+</head>
+<body>
+    <div class="nhce-text">NHCE</div>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="login" class="section-card">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p style="text-align: center;">Don't have an account? <a href="#" onclick="showSection('register')">Register here</a></p>
+        </div>
+
+        <!-- Registration Section -->
+        <div id="register" class="section-card hidden">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+            <p style="text-align: center;">Already have an account? <a href="#" onclick="showSection('login')">Login here</a></p>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section-card hidden">
+            <div class="user-info" id="userInfo"></div>
+            <h2>Welcome to Fitness & Wellbeing Tracker</h2>
+            <div class="nav-buttons">
+                <button onclick="showSection('food')">Food Tracking</button>
+                <button onclick="showSection('workout')">Workout Tracking</button>
+                <button onclick="showSection('wellbeing')">Wellbeing Tracking</button>
+                <button onclick="showSection('bmi')">BMI Calculator</button>
+                <button onclick="showSection('reports')">Weekly Reports</button>
+                <button onclick="showSection('imageAnalysis')">AI Image Analysis</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Food Tracking Section -->
+        <div id="food" class="section-card hidden">
+            <div class="section-header">
+                <h2>Food Tracking</h2>
+            </div>
+            <form id="foodForm">
+                <input type="text" id="foodName" placeholder="Food Name" required>
+                <input type="number" id="quantity" placeholder="Quantity (grams)" value="100" required>
+                <input type="number" id="calories" placeholder="Calories" step="0.1" required>
+                <input type="number" id="protein" placeholder="Protein (g)" step="0.1" required>
+                <input type="number" id="carbs" placeholder="Carbs (g)" step="0.1" required>
+                <input type="number" id="fats" placeholder="Fats (g)" step="0.1" required>
+                <button type="submit">Add Food Entry</button>
+            </form>
+            <button class="back-button" onclick="showSection('dashboard')">Back to Dashboard</button>
+        </div>
+
+        <!-- Workout Tracking Section -->
+        <div id="workout" class="section-card hidden">
+            <div class="section-header">
+                <h2>Workout Tracking</h2>
+            </div>
+            <form id="workoutForm">
+                <select id="workoutType" required>
+                    <option value="">Select Workout Type</option>
+                    <option value="cardio">Cardio</option>
+                    <option value="strength">Strength Training</option>
+                    <option value="yoga">Yoga</option>
+                    <option value="swimming">Swimming</option>
+                    <option value="cycling">Cycling</option>
+                    <option value="walking">Walking</option>
+                    <option value="running">Running</option>
+                </select>
+                <input type="number" id="duration" placeholder="Duration (minutes)" required>
+                <select id="intensity" required>
+                    <option value="">Select Intensity</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <input type="number" id="caloriesBurned" placeholder="Calories Burned (estimated)" step="1" required>
+                <button type="submit">Add Workout Entry</button>
+            </form>
+            <button class="back-button" onclick="showSection('dashboard')">Back to Dashboard</button>
+        </div>
+
+        <!-- Wellbeing Tracking Section -->
+        <div id="wellbeing" class="section-card hidden">
+            <div class="section-header">
+                <h2>Wellbeing Tracking</h2>
+            </div>
+            <form id="wellbeingForm">
+                <select id="mood" required>
+                    <option value="">Select Mood</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="poor">Poor</option>
+                    <option value="terrible">Terrible</option>
+                </select>
+                <input type="number" id="sleepHours" placeholder="Sleep Hours" min="0" max="24" required>
+                <select id="stressLevel" required>
+                    <option value="">Select Stress Level</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <button type="submit">Add Wellbeing Entry</button>
+            </form>
+            <button class="back-button" onclick="showSection('dashboard')">Back to Dashboard</button>
+        </div>
+
+        <!-- BMI Calculator Section -->
+        <div id="bmi" class="section-card hidden">
+            <div class="section-header">
+                <h2>BMI Calculator</h2>
+            </div>
+            <form id="bmiForm">
+                <input type="number" id="weight" placeholder="Weight (kg)" step="0.1" required>
+                <input type="number" id="height" placeholder="Height (m)" step="0.01" required>
+                <button type="submit">Calculate BMI</button>
+            </form>
+            <div id="bmiResult"></div>
+            <button class="back-button" onclick="showSection('dashboard')">Back to Dashboard</button>
+        </div>
+
+        <!-- Weekly Reports Section -->
+        <div id="reports" class="section-card hidden">
+            <div class="section-header">
+                <h2>Weekly Reports</h2>
+            </div>
+            <form style="margin-bottom: 20px;">
+                <input type="date" id="summaryDate">
+                <button type="button" onclick="viewDailySummary()">View Daily Summary</button>
+                <button type="button" onclick="analyzeWeeklyReport()">View Weekly Report</button>
+            </form>
+            <div id="dailySummaryResult"></div>
+            <div id="weeklyReportResult"></div>
+            <button class="back-button" onclick="showSection('dashboard')">Back to Dashboard</button>
+        </div>
+
+        <!-- Image Analysis Section -->
+        <div id="imageAnalysis" class="section-card hidden">
+            <div class="section-header">
+                <h2>AI Image Analysis</h2>
+            </div>
+            <p>Upload any image and our AI will analyze and describe it in detail.</p>
+            <form id="imageUploadForm" enctype="multipart/form-data">
+                <div style="margin: 20px 0;">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <button type="button" onclick="document.getElementById('imageInput').click()" style="width: 100%;">Select Image</button>
+                    <div id="selectedFileName" style="margin-top: 10px; text-align: center;"></div>
+                </div>
+                <div id="imagePreview" style="margin: 20px 0; text-align: center; display: none;">
+                    <img id="previewImage" style="max-width: 100%; max-height: 300px; border-radius: 8px;" />
+                </div>
+                <button type="button" id="analyzeImageBtn" onclick="analyzeImage()" style="width: 100%;">Analyze Image</button>
+            </form>
+            <div id="analysisResult" style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; display: none;">
+                <h3>Image Analysis Results</h3>
+                <p id="analysisDescription"></p>
+            </div>
+            <button class="back-button" onclick="showSection('dashboard')">Back to Dashboard</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

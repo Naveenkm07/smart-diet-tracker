@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Diet Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e0f7fa;
+            line-height: 1.6;
+            color: #343a40;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .section-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 25px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        input, select, textarea {
+            padding: 14px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button {
+            padding: 14px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 17px;
+            margin: 8px 0;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+        }
+        .hidden {
+            display: none;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .image-upload {
+            border: 2px dashed #ced4da;
+            padding: 20px;
+            text-align: center;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .image-upload:hover {
+            border-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍎 Simple Diet Tracker</h1>
+        
+        <!-- Add Food Entry -->
+        <div class="section-card">
+            <h2>Add Food Entry</h2>
+            <form id="foodForm">
+                <input type="text" id="foodName" placeholder="Food name" required>
+                <input type="number" id="calories" placeholder="Calories" required>
+                <input type="number" id="protein" placeholder="Protein (g)" step="0.1">
+                <input type="number" id="carbs" placeholder="Carbs (g)" step="0.1">
+                <input type="number" id="fat" placeholder="Fat (g)" step="0.1">
+                <select id="mealType" required>
+                    <option value="">Select meal type</option>
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="snack">Snack</option>
+                </select>
+                <button type="submit">Add Food Entry</button>
+            </form>
+        </div>
+
+        <!-- Image Analysis -->
+        <div class="section-card">
+            <h2>Analyze Food Image</h2>
+            <div class="image-upload">
+                <input type="file" id="imageInput" accept="image/*">
+                <p>Upload a food image for analysis</p>
+            </div>
+            <button onclick="analyzeImage()">Analyze Image</button>
+            <div id="imageResult"></div>
+        </div>
+
+        <!-- Daily Summary -->
+        <div class="section-card">
+            <h2>Today's Food Log</h2>
+            <button onclick="viewDailySummary()">Refresh Summary</button>
+            <div id="dailySummary"></div>
+        </div>
+
+        <!-- BMI Calculator -->
+        <div class="section-card">
+            <h2>BMI Calculator</h2>
+            <form id="bmiForm">
+                <input type="number" id="weight" placeholder="Weight (kg)" step="0.1" required>
+                <input type="number" id="height" placeholder="Height (cm)" step="0.1" required>
+                <button type="submit">Calculate BMI</button>
+            </form>
+            <div id="bmiResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // Store food entries in localStorage
+        let foodEntries = JSON.parse(localStorage.getItem('foodEntries') || '[]');
+
+        // Add food entry
+        document.getElementById('foodForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const food = {
+                name: document.getElementById('foodName').value,
+                calories: parseFloat(document.getElementById('calories').value),
+                protein: parseFloat(document.getElementById('protein').value) || 0,
+                carbs: parseFloat(document.getElementById('carbs').value) || 0,
+                fat: parseFloat(document.getElementById('fat').value) || 0,
+                mealType: document.getElementById('mealType').value,
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString()
+            };
+            
+            foodEntries.push(food);
+            localStorage.setItem('foodEntries', JSON.stringify(foodEntries));
+            
+            document.getElementById('foodForm').reset();
+            alert('Food entry added successfully!');
+            viewDailySummary();
+        });
+
+        // Analyze image using Flask server
+        async function analyzeImage() {
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const response = await fetch('http://127.0.0.1:5000/analyze-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                document.getElementById('imageResult').innerHTML = 
+                    `<p class="success">Analysis: ${result.description}</p>`;
+            } catch (error) {
+                document.getElementById('imageResult').innerHTML = 
+                    `<p class="error">Error: Could not connect to image analysis server. Make sure the Python server is running on port 5000.</p>`;
+            }
+        }
+
+        // View daily summary
+        function viewDailySummary() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayEntries = foodEntries.filter(entry => entry.date === today);
+            
+            let totalCalories = 0;
+            let totalProtein = 0;
+            let totalCarbs = 0;
+            let totalFat = 0;
+            
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Food</th>
+                            <th>Meal</th>
+                            <th>Calories</th>
+                            <th>Protein</th>
+                            <th>Carbs</th>
+                            <th>Fat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            todayEntries.forEach(entry => {
+                totalCalories += entry.calories;
+                totalProtein += entry.protein;
+                totalCarbs += entry.carbs;
+                totalFat += entry.fat;
+                
+                tableHTML += `
+                    <tr>
+                        <td>${entry.time}</td>
+                        <td>${entry.name}</td>
+                        <td>${entry.mealType}</td>
+                        <td>${entry.calories}</td>
+                        <td>${entry.protein}g</td>
+                        <td>${entry.carbs}g</td>
+                        <td>${entry.fat}g</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+                <h3>Daily Totals:</h3>
+                <p><strong>Calories:</strong> ${totalCalories} | 
+                   <strong>Protein:</strong> ${totalProtein}g | 
+                   <strong>Carbs:</strong> ${totalCarbs}g | 
+                   <strong>Fat:</strong> ${totalFat}g</p>
+            `;
+            
+            document.getElementById('dailySummary').innerHTML = tableHTML;
+        }
+
+        // Calculate BMI
+        document.getElementById('bmiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value) / 100; // Convert cm to m
+            
+            const bmi = weight / (height * height);
+            let category = '';
+            
+            if (bmi < 18.5) category = 'Underweight';
+            else if (bmi < 25) category = 'Normal weight';
+            else if (bmi < 30) category = 'Overweight';
+            else category = 'Obese';
+            
+            document.getElementById('bmiResult').innerHTML = 
+                `<p class="success">Your BMI: ${bmi.toFixed(1)} - ${category}</p>`;
+        });
+
+        // Load initial data
+        viewDailySummary();
+    </script>
+</body>
+</html> 

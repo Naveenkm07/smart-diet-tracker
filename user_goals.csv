@@ -1,0 +1,12 @@
+goal,weight_loss
+target_weight,70
+current_weight,75
+daily_calories,2000
+protein_goal,120
+carbs_goal,200
+fat_goal,65
+dietary_restrictions,vegetarian
+allergies,peanuts
+meal_preferences,low-carb
+activity_level,moderate
+target_date,2024-12-31 
